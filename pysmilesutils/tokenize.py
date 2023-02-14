@@ -72,6 +72,7 @@ class SMILESTokenizer:
         unknown_token: str = "?",
         encoding_type: str = "index",  # "one hot" or "index"
         filename: str = None,
+        warn=True,
     ) -> None:
         self._check_encoding_type(encoding_type)
 
@@ -80,6 +81,7 @@ class SMILESTokenizer:
         self._end_of_smiles_token = end_of_smiles_token
         self._padding_token = padding_token
         self._unknown_token = unknown_token
+        self.warn = warn
 
         self._regex_tokens: List[str] = []
         self._tokens: List[str] = []
@@ -446,11 +448,12 @@ class SMILESTokenizer:
         # Get a compiled tokens regex
         self._re = self._get_compiled_regex(self._tokens, self._regex_tokens)
 
-        if not smiles:
-            warnings.warn(
-                "Tokenizer vocabulary has not been updated. Call `create_vocabulary_from_smiles`\
-                with SMILES data to update."
-            )
+        if (not smiles):
+            if self.warn:
+                warnings.warn(
+                    "Tokenizer vocabulary has not been updated. Call `create_vocabulary_from_smiles`\
+                    with SMILES data to update."
+                )
         else:
             self.create_vocabulary_from_smiles(smiles)
 
